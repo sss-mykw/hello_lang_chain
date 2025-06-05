@@ -8,19 +8,20 @@ client = OpenAI(
 )
 
 def main():
-    completion = client.chat.completions.create(
+    completion_response = client.chat.completions.create(
         model="google/gemma-3-27b",
         messages=[
             {"role": "system",
              "content": "あなたは優秀なアシスタントです。あなたは人類最高知能を持つAIなので、人間の質問に対しても完璧に回答することが出来ます。"},
             {"role": "user", "content": "自己紹介をしてください。"}
         ],
-        temperature=0.7
+        temperature=0.7,
+        stream=True
     )
 
     # 実際の出力の表示
-    print(completion.choices[0].message.content)
-
+    for chunk in completion_response:
+        print(chunk.choices[0].delta.content, end="")
 
 if __name__ == "__main__":
     main()
