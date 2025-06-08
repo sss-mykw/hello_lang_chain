@@ -16,6 +16,7 @@ model = ChatOllama(
     top_p=0.95,
 )
 
+# プロンプトテンプレート ＋ モデル ＋ 出力パーサー
 chain = query | model | StrOutputParser()
 
 def main():
