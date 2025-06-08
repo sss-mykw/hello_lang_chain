@@ -19,16 +19,6 @@ def make_prompt(user_input: str) -> list:
     ]
 
 
-# 保守的（一貫性が高く、堅実な出力）になるようにtemperatureとtop_pを設定
-model = ChatOllama(
-    model="gemma3:27b-it-qat",
-    temperature=0.2,
-    top_p=0.95,
-)
-
-# プロンプトテンプレート ＋ モデル ＋ 出力パーサー
-chain = make_prompt | model | StrOutputParser()
-
 def answer_math_question():
     system_prompt = """
     回答する際は下記のように構造化して出力してください
@@ -71,9 +61,23 @@ def answer_math_question():
     print(result.conclusion)
 
 
-def main():
-    for chunk in chain.stream("日本で一番高い山は何ですか？"):
+def answer_stream(input: str):
+    # 保守的（一貫性が高く、堅実な出力）になるようにtemperatureとtop_pを設定
+    model = ChatOllama(
+        model="gemma3:27b-it-qat",
+        temperature=0.2,
+        top_p=0.95,
+    )
+
+    # プロンプトテンプレート ＋ モデル ＋ 出力パーサー
+    chain = make_prompt | model | StrOutputParser()
+
+    for chunk in chain.stream(input):
         print(chunk, end="", flush=True)
+
+
+def main():
+    answer_stream("日本で一番高い山は何ですか？")
 
     answer_math_question()
 
