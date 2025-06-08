@@ -219,9 +219,9 @@ def router_sample():
 
 
 def main():
-    answer_stream("日本で一番高い山は何ですか？")
+    # answer_stream("日本で一番高い山は何ですか？")
 
-    answer_math_question()
+    # answer_math_question()
 
     router_sample()
 
