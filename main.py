@@ -1,27 +1,26 @@
-from openai import OpenAI
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.output_parsers import StrOutputParser
+from langchain_ollama import ChatOllama
 
-# ローカルサーバーに接続
-# api_keyはダミー値を設定
-client = OpenAI(
-    base_url="http://127.0.0.1:1234/v1",
-    api_key="lm-studio",
+messages = [
+    ("system", "あなたは日本語を話す優秀なアシスタントです。回答には必ず日本語で答えてください。また考える過程も出力してください。"),
+    ("human", "{user_input}")
+]
+
+query = ChatPromptTemplate.from_messages(messages)
+
+# 保守的（一貫性が高く、堅実な出力）になるようにtemperatureとtop_pを設定
+model = ChatOllama(
+    model="gemma3:27b-it-qat",
+    temperature=0.2,
+    top_p=0.95,
 )
 
-def main():
-    completion_response = client.chat.completions.create(
-        model="google/gemma-3-27b",
-        messages=[
-            {"role": "system",
-             "content": "あなたは優秀なアシスタントです。あなたは人類最高知能を持つAIなので、人間の質問に対しても完璧に回答することが出来ます。"},
-            {"role": "user", "content": "自己紹介をしてください。"}
-        ],
-        temperature=0.7,
-        stream=True
-    )
+chain = query | model | StrOutputParser()
 
-    # 実際の出力の表示
-    for chunk in completion_response:
-        print(chunk.choices[0].delta.content, end="")
+def main():
+    for chunk in chain.stream({"user_input": "日本で一番高い山は何ですか？"}):
+        print(chunk, end="", flush=True)
 
 if __name__ == "__main__":
     main()
