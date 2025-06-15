@@ -29,6 +29,7 @@ def create_langgraph(chain, tools):
     def should_continue(state: GraphState):
         messages = state["messages"]
         last_message = messages[-1]
+        # LLMがツール呼び出しを要求したかどうか
         if last_message.tool_calls:
             return "tools"
         return END
@@ -42,6 +43,7 @@ def create_langgraph(chain, tools):
     # edgeの追加
     workflow.add_edge(START, node_name_agent)
     workflow.add_conditional_edges(node_name_agent, path=should_continue, path_map=[node_name_tools, END])
+    # toolsノードの結果をLLMに返し、再びツールを使用する必要があるかどうかを判断する
     workflow.add_edge(node_name_tools, node_name_agent)
     # グラフの状態をインメモリーに保存
     memory = MemorySaver()
