@@ -48,6 +48,10 @@ def create_langgraph(chain, tools):
     # グラフの状態をインメモリーに保存
     memory = MemorySaver()
     graph = workflow.compile(checkpointer=memory)
+
+    # デバッグ用
+    graph.get_graph().print_ascii()
+
     return graph
 
 def conversation(graph):
@@ -71,7 +75,7 @@ def conversation(graph):
         )]
 
         # 同じスレッドIDでinvokeが繰り返されることで、会話履歴が引き継がれる
-        response = graph.invoke({"messages": input_query}, config={"configurable": {"thread_id": "12345"}})
+        response = graph.invoke({"messages": input_query}, config={"configurable": {"thread_id": "12345"}}, debug=True)
 
         # デバック用
         print("response: ", response)
