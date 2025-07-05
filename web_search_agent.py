@@ -1,8 +1,5 @@
-import operator
-from typing import TypedDict, Annotated
-
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-from langchain_core.messages import HumanMessage, SystemMessage, AnyMessage
+from langchain_core.messages import HumanMessage, SystemMessage
 
 from langchain_google_genai import ChatGoogleGenerativeAI
 
@@ -13,13 +10,7 @@ from langgraph.graph import START, END, StateGraph
 from langgraph.prebuilt import ToolNode
 
 from prompts import web_search_system_prompt
-
-
-class GraphState(TypedDict):
-    # messagesがキー、list[AnyMessage]がバリュー
-    # messagesキーには、HumanMessageやAIMessageなど、任意のメッセージオブジェクトのリストが格納される
-    # list[AnyMessage]バリューには、messagesキーに新しい値（メッセージリスト）が渡された場合、既存のリストにその値を追加（add）する
-    messages: Annotated[list[AnyMessage], operator.add]
+from state import GraphState
 
 
 def create_langgraph(chain, tools):
