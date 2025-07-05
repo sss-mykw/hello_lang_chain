@@ -12,6 +12,9 @@ from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import START, END, StateGraph
 from langgraph.prebuilt import ToolNode
 
+from prompts import web_search_system_prompt
+
+
 class GraphState(TypedDict):
     # messagesがキー、list[AnyMessage]がバリュー
     # messagesキーには、HumanMessageやAIMessageなど、任意のメッセージオブジェクトのリストが格納される
@@ -99,17 +102,9 @@ def main():
         tavily_extract_tool,
     ]
 
-    system_prompt = """
-    あなたは日本語を話す優秀なアシスタントです。回答には必ず日本語で答えてください。また考える過程も出力してください。
-    私たちは「tavily_search_tool」と「tavily_extract_tool」という2つのツールを持っています。
-    tavily_search_toolは、Google検索を行い、上位5件のURLや概要を取得するツールです。どんなwebサイトがあるかを浅く拾う場合にはこちらを利用します
-    tavily_extract_toolは、URLを指定して、ページの内容を抽出するツールです。特定のWebサイトのURLがわかっており、詳細に内容を取得する場合はこちらを利用します。
-    適切に利用してユーザからの質問に回答してください。
-    """
-
     # messageを作成する
     message = [
-        SystemMessage(content=system_prompt),
+        SystemMessage(content=web_search_system_prompt),
         # メッセージのリスト（会話履歴）を動的に挿入するためのplaceholder
         MessagesPlaceholder("messages"),
     ]
