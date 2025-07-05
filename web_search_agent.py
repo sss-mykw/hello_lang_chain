@@ -3,8 +3,6 @@ from langchain_core.messages import SystemMessage
 
 from langchain_google_genai import ChatGoogleGenerativeAI
 
-from langchain_tavily import TavilySearch, TavilyExtract
-
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import START, END, StateGraph
 from langgraph.prebuilt import ToolNode
@@ -12,6 +10,7 @@ from langgraph.prebuilt import ToolNode
 from conversation import conversation
 from prompts import web_search_system_prompt
 from state import GraphState
+from tools import tavily_tools
 
 
 def create_langgraph(chain, tools):
@@ -53,17 +52,8 @@ def main():
         max_retries=0,
     )
 
-    tavily_search_tool = TavilySearch(
-        max_results=10,
-        topic="general",
-    )
-
-    tavily_extract_tool = TavilyExtract()
-
-    tools = [
-        tavily_search_tool,
-        tavily_extract_tool,
-    ]
+    tools = []
+    tools.extend(tavily_tools)
 
     # messageを作成する
     message = [
